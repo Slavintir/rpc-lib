@@ -79,8 +79,7 @@ main();
 ## Example service
 
 ```ts
-import { RpcClient } from '../src/core/client.core';
-import { RmqClient } from '../src/transports/rmq';
+import { RpcClient, RmqClient } from '../src';
 
 async function main() {
     const rmqClient = new RmqClient('math', { username: 'guest', password: 'guest' });
