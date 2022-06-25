@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "baseUrl": "./src",
+        "outDir": "./dist",
+        "sourceMap": true,
+        "target": "ESNext",
+        "types": ["node", "reflect-metadata"],
+        "moduleResolution": "node",
+        "strict": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": false,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "declaration": true,
+    },
+    "exclude": ["node_modules", "dist"],
+}
