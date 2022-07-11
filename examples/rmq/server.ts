@@ -20,7 +20,7 @@ import {
 } from '../../src';
 
 class ValidateInterceptor implements IJsonInterceptor {
-    async intercept(ctx: ICtx<any>, result: any, next: Function) {
+    async intercept(ctx: ICtx<Message>, result: object, next: Function) {
         const errors = await validate(result);
 
         if (errors.length) {
