@@ -17,7 +17,7 @@ export enum RpcErrorMessage {
 }
 
 export class RpcError extends Error {
-    constructor(readonly code: RpcErrorCore, message?: string) {
+    constructor(readonly code: RpcErrorCore, message?: string, readonly data?: object | object[]) {
         if (message) {
             super(message);
             return;

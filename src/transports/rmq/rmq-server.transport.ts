@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import { RpcError } from '../../core/error.core';
 import { ICtx, ITransport } from '../../core/interfaces.core';
 import { RmqCommon } from './rmq-common.transport';
 
@@ -26,7 +27,7 @@ export class RmqTransport extends RmqCommon implements ITransport {
                 params,
                 end: (result) => this.end(msg, result),
                 json: (result) => this.json(msg, result),
-                error: (code, message) => this.error(msg, code, message),
+                error: (err: RpcError) => this.error(msg, err.code, err.message),
                 content: msg.content,
             };
 

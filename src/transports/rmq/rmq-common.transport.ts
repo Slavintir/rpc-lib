@@ -29,6 +29,7 @@ export class RmqCommon extends EventEmitter {
 
         this.connection.on('error', (err) => { console.error('rpc_connection_error =>', err.message); });
         this.channel.on('error', (err) => { console.error('rpc_channel_error =>', err.message); });
+        this.channel.on('close', () => process.abort());
 
         await Promise.all([
             this.channel.assertExchange(this.exchange, 'topic'),

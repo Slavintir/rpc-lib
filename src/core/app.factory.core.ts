@@ -3,19 +3,19 @@ import rmq from 'amqplib';
 
 import { RpcServer } from './server.core';
 import { RmqTransport } from '../transports/rmq/rmq-server.transport';
-import { ITransport, Newable, IControllerMeta, IMethod, IMiddleware } from './interfaces.core';
+import { ITransport, Newable, IControllerMeta, IMethod, IUseMiddleware, IMiddleware } from './interfaces.core';
 
-export enum Transport {
+export enum Transporter {
     RMQ = 'RabbitMq',
 }
 
 interface CommandOptions {
     controllers?: any[],
-    middlewares?: IMiddleware[],
+    middlewares?: Newable<IUseMiddleware>[],
 }
 
 export interface RMQOptions extends CommandOptions {
-    type: Transport.RMQ;
+    transporter: Transporter.RMQ;
     params: {
         serviceName: string;
         connect: rmq.Options.Connect;
@@ -28,10 +28,10 @@ export type Options = RMQOptions;
 export class AppFactory {
     static createMicroservice(options: Options) {
         let transport: ITransport;
-        const { controllers = [], middlewares = [] } = options;
+        const { controllers = [] } = options;
 
-        switch (options.type) {
-            case Transport.RMQ: {
+        switch (options.transporter) {
+            case Transporter.RMQ: {
                 const { connect, serviceName, assertQueue } = options.params;
                 transport = new RmqTransport(serviceName, connect, assertQueue);
                 break;
@@ -41,23 +41,27 @@ export class AppFactory {
                 throw new Error('transport type is not defined');
         }
 
-        const methods = controllers
-            .flatMap((Controller: Newable<IControllerMeta>) => {
-                const controller = new Controller();
+        const middlewares = options.middlewares?.reduce((acc: IMiddleware[], Middleware): IMiddleware[] => {
+            const middleware = new Middleware();
+            return [...acc, middleware.use.bind(middleware)];
+        }, []) || [];
 
-                const fn = (acc: IMethod[], method: IMethod): IMethod[] => ([
-                    ...acc,
-                    {
-                        ...method,
-                        middlewares: [...middlewares, ...method.middlewares],
-                        name: controller.prefix
-                            ? `${controller.prefix}.${method.name}`
-                            : method.name,
-                    },
-                ]);
+        const methods = controllers.flatMap((Controller: Newable<IControllerMeta>) => {
+            const controller = new Controller();
 
-                return Object.values(controller.$methods).reduce(fn, []);
-            });
+            const fn = (acc: IMethod[], method: IMethod): IMethod[] => ([
+                ...acc,
+                {
+                    ...method,
+                    middlewares: [...middlewares, ...method.middlewares],
+                    name: controller.prefix
+                        ? `${controller.prefix}.${method.name}`
+                        : method.name,
+                },
+            ]);
+
+            return Object.values(controller.$methods).reduce(fn, []);
+        });
 
         return new RpcServer(transport, methods);
     }

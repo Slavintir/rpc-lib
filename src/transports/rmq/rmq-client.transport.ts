@@ -82,19 +82,18 @@ export class RmqClient extends RmqCommon implements IClient {
         });
     }
 
-    close() {
-        const timer = setInterval(() => {
-            if (!this.interval) {
-                clearInterval(timer);
-                this.channel.close();
-                return;
-            }
+    async close() {
+        return new Promise<void>(resolve => {
+            const timer = setInterval(async () => {
+                if (this.requests.size !== 0) {
+                    return;
+                }
 
-            if (this.requests.size === 0) {
                 clearInterval(timer);
-                clearInterval(this.interval);
-                this.channel.close();
-            }
-        }, 100);
+                await this.channel.close();
+                await this.connection.close();
+                resolve();
+            }, 100);
+        });
     }
 }

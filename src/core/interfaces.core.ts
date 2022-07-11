@@ -1,16 +1,17 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { EventEmitter } from 'events';
+import { RpcError } from './error.core';
 
 export type IPayload = string | object | object[];
 
-export interface ICtx<T = any> {
+export interface ICtx<M = any, P = any> {
     method: string;
     content: Buffer;
-    params: T;
-    msg?: any;
+    params: P;
+    msg?: M;
     end(o: string): void;
     json(o: object | number | string | (object | number | string)[]): void;
-    error(code: number, message: string): void;
+    error(err: RpcError): void;
 }
 
 export interface IMiddleware {
@@ -49,6 +50,7 @@ export interface IServer {
 
 export interface IClient {
     call(method: string, payload: any): Promise<any>;
+    close(): Promise<void>;
 }
 
 export interface IMethod {
@@ -69,7 +71,7 @@ export interface ITransport extends EventEmitter {
 }
 
 export interface Newable<T = {}> {
-    new (...args: any[]): T
+    new (args?: any): T
 }
 
 export interface IControllerMeta extends Newable {

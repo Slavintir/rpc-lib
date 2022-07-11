@@ -1,3 +1,4 @@
+import { RpcErrorCore, RpcError } from './error.core';
 import { COUNT_OF_ARGS_ERROR_HANDLER, COUNT_OF_ARGS_HANDLER, COUNT_OF_ARGS_MIDDLEWARE } from './constants.core';
 import {
     ICtx,
@@ -23,7 +24,7 @@ export class RpcServer implements IServer {
         let handler: IHandler | null = null;
         let errorHandler: IErrorHandler | null = null;
 
-        handlers.forEach(func => {
+        handlers.forEach((func) => {
             switch (func.length) {
                 case COUNT_OF_ARGS_HANDLER:
                     handler = func as IHandler;
@@ -81,7 +82,7 @@ export class RpcServer implements IServer {
         const method = this.methods.get(ctx.method);
 
         if (!method) {
-            return ctx.error(-32601, 'method not found');
+            return ctx.error(new RpcError(RpcErrorCore.MethodNotFound, 'method_not_defined'));
         }
 
         return this.handel(ctx, method);
