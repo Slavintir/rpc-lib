@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable max-classes-per-file */
 import 'reflect-metadata';
-import { IsArray, IsNumber, validate } from 'class-validator';
+import { IsNumber, validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { Message } from 'amqplib';
 

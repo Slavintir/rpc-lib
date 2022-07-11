@@ -1,7 +1,7 @@
 import { IControllerMeta, IJsonInterceptor, IUseMiddleware, Newable } from '../interfaces.core';
 
-export function Controller(prefix: string) {
-    return (constructor: Newable) => class extends constructor {
+export function Controller(prefix: string): any {
+    return (constructor: Newable): any => class extends constructor {
         prefix = prefix;
     };
 }
@@ -79,7 +79,7 @@ export function Headers() {
     };
 }
 
-export function Intercept(interceptor: Newable<IJsonInterceptor>) {
+export function Intercept(interceptor: Newable<IJsonInterceptor>): any {
     return (target: IControllerMeta, propertyKey: string) => {
         if (!target.$methods[propertyKey]) {
             throw new Error(`you should decorate "${propertyKey}" as @Method()`);

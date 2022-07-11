@@ -22,7 +22,7 @@ const processKey = (ctx: ICtx) => (
     ({ key, type }: { key: string, type: any }) => (keysList[key as Key] || keysList._)(ctx, type)
 );
 
-export function Method(name: string) {
+export function Method(name: string): any {
     return (target: IControllerMeta, propertyKey: string, descriptor: PropertyDescriptor) => {
         if (!target.$methods) {
             Object.assign(target, { $methods: {} });
